@@ -102,6 +102,28 @@ pub fn claim_slot(ctx: Context<ClaimSlot>, round_index: u32) -> Result<()> {
     Ok(())
 }
 
+
+pub fn withdraw_sol(ctx: Context<WithDrawSOL>, amount:u64) -> Result<()> {
+    let accts = ctx.accounts;
+
+    require!(accts.global_state.owner == accts.owner.key(), RoundError::NotAllowedOwner);
+
+    let (_, bump) = Pubkey::find_program_address(&[VAULT_SEED], &crate::ID);
+
+    invoke_signed(
+        &system_instruction::transfer(&accts.vault.key(), &accts.owner.key(), amount),
+        &[
+            accts.vault.to_account_info().clone(),
+            accts.owner.to_account_info().clone(),
+            accts.system_program.to_account_info().clone(),
+        ],
+        &[&[VAULT_SEED, &[bump]]],
+    )?;
+
+    Ok(())
+}
+
+
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(mut)]
@@ -234,6 +256,29 @@ pub struct ClaimSlot<'info> {
         bump,
     )]
     pub round_user_info: Account<'info, RoundUserInfo>,
+
+    pub system_program: Program<'info, System>,
+}
+
+
+#[derive(Accounts)]
+pub struct WithDrawSOL<'info> {
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [GLOBAL_STATE_SEED], 
+        bump,
+    )]
+    pub global_state: Account<'info, GlobalState>,
+
+    #[account(
+        mut,
+        address = global_state.vault
+    )]
+    /// CHECK: this should be set by admin
+    pub vault: AccountInfo<'info>,  // to receive SOL
 
     pub system_program: Program<'info, System>,
 }
