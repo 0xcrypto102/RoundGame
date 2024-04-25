@@ -11,12 +11,11 @@ describe("round", () => {
   const program = anchor.workspace.Round as Program<Round>;
 
   let owner = Keypair.fromSecretKey(
-    Uint8Array.from([93,241,149,127,150,75,40,131,222,198,214,225,84,78,102,157,181,245,231,106,49,111,65,167,50,214,55,136,120,176,205,183,235,107,145,1,68,46,115,54,118,167,44,241,173,67,177,80,0,131,118,118,218,31,93,138,157,168,128,60,50,7,130,21])
+    Uint8Array.from([/* private key as uint8array*/])
   );
 
   let user = Keypair.fromSecretKey(
-    Uint8Array.from([40,99,26,70,105,80,7,101,254,157,6,15,246,207,151,29,5,142,33,154,246,128,6,190,239,191,147,115,241,217,13,169,63,7,158,42,242,198,39,230,40,85,41,68,22,57,86,10,229,14,159,81,159,159,3,218,116,30,3,106,54,57,221,134])
-  );
+    Uint8Array.from([/* private key as uint8array*/])  );
 
   
 
@@ -44,7 +43,8 @@ describe("round", () => {
       program.programId
     );
 
-  })
+  });
+
   it("Is initialized!", async () => {
     // Add your test here.
     const slotTokenPrice = 100000000; // 0.1SOL
@@ -259,4 +259,25 @@ describe("round", () => {
   });
 
 
+  it("withdraw sol", async() => {
+    let balance = await program.provider.connection.getBalance(vault);
+    let lamportBalance=(balance / 1000000000);
+    console.log("lamportBalance before withdraw->", lamportBalance);
+
+    const tx = await program.rpc.withdrawSol(
+      new anchor.BN(balance),
+      {
+        accounts: {
+          owner: owner.publicKey,
+          globalState,
+          vault,
+          systemProgram: SystemProgram.programId
+        },
+        signers: [owner]
+      }
+    );
+    balance = await program.provider.connection.getBalance(vault);
+    lamportBalance=(balance / 1000000000);
+    console.log("lamportBalance after withdraw->", lamportBalance);
+  });
 });
