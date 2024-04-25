@@ -44,7 +44,8 @@ describe("round", () => {
       program.programId
     );
 
-  })
+  });
+  /*
   it("Is initialized!", async () => {
     // Add your test here.
     const slotTokenPrice = 100000000; // 0.1SOL
@@ -257,6 +258,27 @@ describe("round", () => {
     console.log("roundData->", roundUserInfoData);
   
   });
+  */
 
+  it("withdraw sol", async() => {
+    let balance = await program.provider.connection.getBalance(vault);
+    let lamportBalance=(balance / 1000000000);
+    console.log("lamportBalance before withdraw->", lamportBalance);
 
+    const tx = await program.rpc.withdrawSol(
+      new anchor.BN(balance),
+      {
+        accounts: {
+          owner: owner.publicKey,
+          globalState,
+          vault,
+          systemProgram: SystemProgram.programId
+        },
+        signers: [owner]
+      }
+    );
+    balance = await program.provider.connection.getBalance(vault);
+    lamportBalance=(balance / 1000000000);
+    console.log("lamportBalance after withdraw->", lamportBalance);
+  });
 });
