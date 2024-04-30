@@ -4,7 +4,6 @@
 seeds = false
 skip-lint = false
 
-[programs.devnet]
 round = "BoB8rikXuQDYqDet9YSpqYmXcCBYiRxPSeLW7iXz8VdG"
 
 [registry]

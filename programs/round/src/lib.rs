@@ -6,7 +6,9 @@ pub mod state;
 pub mod constants;
 
 use instructions::*;
+
 declare_id!("BoB8rikXuQDYqDet9YSpqYmXcCBYiRxPSeLW7iXz8VdG");
+
 
 #[program]
 pub mod round {
@@ -30,6 +32,10 @@ pub mod round {
 
     pub fn claim_slot(ctx: Context<ClaimSlot>) -> Result<()> {
         instructions::claim_slot(ctx)
+    }
+
+    pub fn withdraw_sol(ctx: Context<WithDrawSOL>, amount: u64) -> Result<()> {
+        instructions::withdraw_sol(ctx, amount)
     }
 
     pub fn withdraw_sol(ctx: Context<WithDrawSOL>, amount: u64) -> Result<()> {
